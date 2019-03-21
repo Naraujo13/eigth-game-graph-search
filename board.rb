@@ -49,14 +49,47 @@ class Board
   end
 
   # Given a board, check if it has a valid solution
+  # TODO: needs testing and breaking up in easier functions
   def solvable(board)
-    true
+    puzzle = board.flatten
+    # Current row
+    row = 0
+    # Parity
+    parity = 0
+    # Row with the blank space
+    blank = 0
+
+    (0..(size - 1)).each do |i|
+      # Advance to next row if
+      row += 1 if i % size
+
+      if puzzle[i].zero?
+        blank = row
+        next
+      end
+
+      ((i + 1)..(puzzle.length - 1)).each do |j|
+        parity += 1 if puzzle[i] > puzzle[j] && puzzle[j] != 0
+      end
+    end
+
+    if size.even?
+      if blank.even?
+        parity.even?
+      else
+        parity.odd?
+      end
+    else
+      parity.even?
+    end
   end
   # ----------
 
   # ------------Pretty Print Auxiliary Methods
+
+  # Auxiliary function to print a row of the board separated by '|'
   def pretty_print_row(row)
-    row.each do |e| 
+    row.each do |e|
       if e.zero?
         printf '| '
       else
@@ -66,6 +99,7 @@ class Board
     printf "|\n"
   end
 
+  # Auxiliary function to print a line divider
   def pretty_print_line_divider
     size.times { printf '--' }
     printf "-\n"
