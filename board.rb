@@ -49,9 +49,17 @@ class Board
   end
 
   # Given a board, check if it has a valid solution
-  # TODO: needs testing and breaking up in easier functions
   def solvable(board)
-    puzzle = board.flatten
+    # Gets parity and blank position
+    parity, blank = get_parity_and_blank(board.flatten)
+
+    # Checks based on parity and blank position if it is solvable
+    check_parity_and_blank(parity, blank)
+  end
+  # ----------
+
+  # Calculates parity and blank position for a flattened (1 dimension) board
+  def get_parity_and_blank(flattened_board)
     # Current row
     row = 0
     # Parity
@@ -63,16 +71,36 @@ class Board
       # Advance to next row if
       row += 1 if i % size
 
-      if puzzle[i].zero?
+      if flattened_board[i].zero?
         blank = row
         next
       end
 
-      ((i + 1)..(puzzle.length - 1)).each do |j|
-        parity += 1 if puzzle[i] > puzzle[j] && puzzle[j] != 0
+      # Updates parity
+      parity = update_parity(flattened_board, parity, i)
+    end
+
+    # Return parity and blank
+    [parity, blank]
+  end
+
+  # Updates parity of a flattened board given a certain position
+  def update_parity(flattened_board, parity, current_pos)
+    # Loops through next positions, updating parity
+    ((current_pos + 1)..(flattened_board.length - 1)).each do |j|
+      if  flattened_board[current_pos] > flattened_board[j] &&
+          flattened_board[j] != 0
+        parity += 1
       end
     end
 
+    # Returns updated parity
+    parity
+  end
+
+  # Checks based on board size, parity and blank position
+  # if the board is solvable
+  def check_parity_and_blank(parity, blank)
     if size.even?
       if blank.even?
         parity.even?
@@ -83,7 +111,7 @@ class Board
       parity.even?
     end
   end
-  # ----------
+
 
   # ------------Pretty Print Auxiliary Methods
 
