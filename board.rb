@@ -1,25 +1,28 @@
+require_relative 'node'
+
 # Class that represents a board of the game
 class Board
+  # -- Acessors
+  attr_accessor :size
+  attr_reader :values
+  attr_reader :root
 
   # Initializer
   def initialize(size)
     @size = size
-    @values = random_board
+    @current_state = random_board
+    @root = Node.new(@current_state)
   end
 
   # Pretty Print
   def pretty_print
     puts '--- Board ---'
     pretty_print_line_divider
-    @values.each do |row|
+    @current_state.each do |row|
       pretty_print_row(row)
       pretty_print_line_divider
     end
   end
-
-  # -- Acessors
-  attr_accessor :size
-  attr_reader :values
 
   private
 
