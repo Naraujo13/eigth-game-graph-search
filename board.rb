@@ -6,12 +6,24 @@ class Board
   attr_accessor :size
   attr_reader :values
   attr_reader :root
+  attr_reader :final_state
 
   # Initializer
-  def initialize(size)
+  def initialize(size, final_state = nil)
     @size = size
     @current_state = random_board
     @root = Node.new(@current_state)
+    @final_state =  if final_state.nil?
+                      Node.new(
+                        [
+                          [1, 2, 3],
+                          [4, 5, 6],
+                          [7, 8, 0]
+                        ]
+                      )
+                    else
+                      Node.new(final_state)
+                    end
   end
 
   # Pretty Print
@@ -22,6 +34,12 @@ class Board
       pretty_print_row(row)
       pretty_print_line_divider
     end
+  end
+
+  # Given a state returns true or false based on wheter it is the desired
+  # solution
+  def solution?(state)
+    state.current_state == final_state.current_state
   end
 
   private

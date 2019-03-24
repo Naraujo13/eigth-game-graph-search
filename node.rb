@@ -63,6 +63,16 @@ class Node
     @right_child
   end
 
+  # -- Returns array with all children nodes
+  def children
+    children = []
+    children << up_child unless up_child.nil?
+    children << down_child unless down_child.nil?
+    children << left_child unless left_child.nil?
+    children << right_child unless right_child.nil?
+    children
+  end
+
   # Initializer
   def initialize(state, father = nil, blank_x = nil, blank_y = nil)
     @current_state = state
