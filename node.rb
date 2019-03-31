@@ -107,6 +107,22 @@ class Node
 
   private
 
+  def parent_states(backtracking = 3)
+    parents_array = []
+    parent = self
+    backtracking.times do
+      # Updates parent
+      parent = parent.father
+
+      # Guard clause for parent nil
+      return parents_array if parent.nil?
+
+      # Add parent state to array
+      parents_array << parent.current_state
+    end
+    parents_array
+  end
+
   # ---------- Movement Auxiliary Methods
 
   # -- Up
@@ -118,6 +134,10 @@ class Node
 
     # Make the movement
     new_state = swap_up
+
+    # Avoids loop
+    parents_array = parent_states(3)
+    return nil if parents_array.include?(new_state)
 
     # Returns new node
     Node.new(new_state, self, blank_x, blank_y + 1)
@@ -146,6 +166,10 @@ class Node
     # Make the movement
     new_state = swap_down
 
+    # Avoids loop
+    parents_array = parent_states(3)
+    return nil if parents_array.include?(new_state)
+
     # Returns new node
     Node.new(new_state, self, blank_x, blank_y - 1)
   end
@@ -173,6 +197,10 @@ class Node
     # Make the movement
     new_state = swap_left
 
+    # Avoids loop
+    parents_array = parent_states(3)
+    return nil if parents_array.include?(new_state)
+
     # Returns new node
     Node.new(new_state, self, blank_x + 1, blank_y)
   end
@@ -199,6 +227,10 @@ class Node
 
     # Make the movement
     new_state = swap_right
+
+    # Avoids loop
+    parents_array = parent_states(3)
+    return nil if parents_array.include?(new_state)
 
     # Returns new node
     Node.new(new_state, self, blank_x - 1, blank_y)
