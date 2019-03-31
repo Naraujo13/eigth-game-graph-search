@@ -9,21 +9,10 @@ class Board
   attr_reader :final_state
 
   # Initializer
-  def initialize(size, final_state = nil)
+  def initialize(size, initial_state = nil, final_state = nil)
     @size = size
-    @current_state = random_board
+    initialize_initial_and_final_state(initial_state, final_state)
     @root = Node.new(@current_state)
-    @final_state =  if final_state.nil?
-                      Node.new(
-                        [
-                          [1, 2, 3],
-                          [4, 5, 6],
-                          [7, 8, 0]
-                        ]
-                      )
-                    else
-                      Node.new(final_state)
-                    end
   end
 
   # Pretty Print
@@ -43,6 +32,33 @@ class Board
   end
 
   private
+
+  def initialize_initial_and_final_state(initial, final)
+    initialize_initial_state(initial)
+    initialize_final_state(final)
+  end
+
+  def initialize_initial_state(state)
+    @current_state =  if state.nil? || state.length != size
+                        random_board
+                      else
+                        state
+                      end
+  end
+
+  def initialize_final_state(state)
+    @final_state =  if state.nil?
+                      Node.new(
+                        [
+                          [1, 2, 3],
+                          [4, 5, 6],
+                          [7, 8, 0]
+                        ]
+                      )
+                    else
+                      Node.new(state)
+                    end
+  end
 
   # ---------- Board Auxiliary Methods
 
@@ -132,7 +148,6 @@ class Board
       parity.even?
     end
   end
-
 
   # ------------Pretty Print Auxiliary Methods
 
