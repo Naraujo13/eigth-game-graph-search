@@ -167,7 +167,7 @@ class Node
     new_state = swap_down
 
     # Avoids loop
-    parents_array = parent_states(3)
+    parents_array = parent_states(10)
     return nil if parents_array.include?(new_state)
 
     # Returns new node

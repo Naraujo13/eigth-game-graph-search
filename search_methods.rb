@@ -1,28 +1,47 @@
 load 'board.rb'
 
-def test
-  b = Board.new(3)
-  search(b)
+require 'fc'
+
+def test(type = 'astar', search_param = 'manhattan', board = nil, debug = false)
+  b = if board.nil?
+        Board.new(3)
+      else
+        board
+      end
+  a = Time.now
+  search(b, type, search_param, debug)
+  puts "Tempo: #{Time.now - a}"
 end
 
-def search(board, type = 'breadth', interval_size = 5)
-  byebug
+def search(board, type = 'breadth', search_param = 'manhattan', debug = false)
+  puts "Initial Board:" if debug
+  board.pretty_print if debug
   solution_state =  if type == 'breadth'
-                      breadth_search(board)
+                      puts '-- Breadth Search --' if debug
+                      breadth_search(board, debug)
                     elsif type == 'depth'
-                      depth_search(board)
+                      puts '-- Depth Search --' if debug
+                      depth_search(board, debug)
                     elsif type == 'iterative'
-                      iterative_deepening_depth_search(board, interval_size)
+                      puts '-- Iterative Breadth Search --' if debug
+                      iterative_deepening_depth_search(
+                        board, search_param, debug
+                      )
+                    elsif type == 'astar'
+                      puts '-- A* Search --' if debug
+                      astar(board, search_param, debug)
                     else
-                      puts "No search found with the name #{type}"
+                      puts "No search found with the name #{type}" if debug
                       nil
                     end
   return if solution_state.nil?
 
+  return unless debug
+
   movements = movement_trace(solution_state)
   puts 'Initial Board:'
   board.pretty_print
-  puts 'Movements to Solve:'
+  puts "Movements to Solve: #{movements.length}"
   pretty_print_movement_trace(movements)
   puts 'Final Board:'
   pretty_print(solution_state.current_state)
@@ -31,24 +50,24 @@ end
 # ------------ Search algorithms
 
 # -- Breadth Search
-def breadth_search(board)
+def breadth_search(board, debug = false)
   queue = []
   queue.push(board.root)
 
   analyzed_states = 0
 
   # Prints initial board
-  puts 'Starting board:'
-  board.pretty_print
+  puts 'Starting board:' if debug
+  board.pretty_print if debug
 
   loop do
     # Gets state
     state = queue.shift(1).first
 
     # Prints number of states analyzed and current queue
-    puts "Analyzed States: #{analyzed_states}"
-    puts "Current Queue Size: #{queue.length}"
-    puts "Current Level: #{state.level}\n\n"
+    puts "Analyzed States: #{analyzed_states}" if debug
+    puts "Current Queue Size: #{queue.length}" if debug
+    puts "Current Level: #{state.level}\n\n" if debug
 
     # Breaks if it is the solution
     return state if board.solution?(state)
@@ -68,29 +87,29 @@ def breadth_search(board)
 end
 
 # -- Depth Search
-def depth_search(board)
+def depth_search(board, debug = false)
   queue = []
   queue.push(board.root)
 
   analyzed_states = 0
 
   # Prints initial board
-  puts 'Starting board:'
-  board.pretty_print
+  puts 'Starting board:' if debug
+  board.pretty_print if debug
 
   loop do
     # Gets state
     state = queue.pop
     # Prints number of states analyzed and current queue
-    puts "Analyzed States: #{analyzed_states}"
-    puts "Current Queue Size: #{queue.length}"
-    puts "Current Level: #{state.level}\n\n"
+    puts "Analyzed States: #{analyzed_states}" if debug
+    puts "Current Queue Size: #{queue.length}" if debug
+    puts "Current Level: #{state.level}\n\n" if debug
 
     # Breaks if it is the solution
     return state if board.solution?(state)
 
     # Pushes children into the queue
-    queue += state.children
+    queue += state.children if state.level < 30
 
     # Breaks if queue is empty
     break if queue.empty?
@@ -104,12 +123,12 @@ def depth_search(board)
 end
 
 # -- Depth Search
-def iterative_deepening_depth_search(board, interval_size = 5)
+def iterative_deepening_depth_search(board, interval_size = 5, debug = false)
   analyzed_states = 0
 
   # Prints initial board
-  puts 'Starting board:'
-  board.pretty_print
+  puts 'Starting board:' if debug
+  board.pretty_print if debug
 
   # Initialize max depth
   max_level = 0
@@ -122,15 +141,15 @@ def iterative_deepening_depth_search(board, interval_size = 5)
     queue = []
     queue.push(board.root)
 
-    puts "\n\n-----\nCurrent Max Depth: #{max_level}:"
+    puts "\n\n-----\nCurrent Max Depth: #{max_level}:" if debug
 
     loop do
       # Gets state
       state = queue.pop
       # Prints number of states analyzed and current queue
-      puts "Analyzed States: #{analyzed_states}"
-      puts "Current Queue Size: #{queue.length}"
-      puts "Current Level: #{state.level}\n\n"
+      puts "Analyzed States: #{analyzed_states}" if debug
+      puts "Current Queue Size: #{queue.length}" if debug
+      puts "Current Level: #{state.level}\n\n" if debug
 
       # Breaks if it is the solution
       return state if board.solution?(state)
@@ -153,15 +172,90 @@ def iterative_deepening_depth_search(board, interval_size = 5)
   []
 end
 
-def astar(board, heuristic = 1)
+# -- A*
 
-  visited = []
-  queue = [board.root]
-
+def astar(board, heuristic = 'manhattan', debug = false)
   # Prints initial board
-  puts 'Starting board:'
-  board.pretty_print
+  puts 'Starting board:' if debug
+  board.pretty_print if debug
 
+  # Current queue
+  queue = FastContainers::PriorityQueue.new(:min)
+  queue.push(
+    board.root,
+    heuristic(
+      board.root.current_state, board.final_state.current_state, 'manhattan'
+    ) +
+      board.root.level
+  )
+
+  analyzed_states = 0
+
+  loop do
+    # Gets state
+    state = queue.pop
+
+    # Prints number of states analyzed and current queue
+    puts "Analyzed States: #{analyzed_states}" if debug
+    puts "Current Queue Size: #{queue.size}" if debug
+    puts "Current Level: #{state.level}\n\n" if debug
+
+    # Breaks if it is the solution
+    return state if board.solution?(state)
+
+    # Iterates children
+    state.children.each do |child|
+      queue.push(
+        child,
+        heuristic(
+          child.current_state, board.final_state.current_state, 'manhattan'
+        ) +
+          child.level
+      )
+    end
+
+    analyzed_states += 1
+
+    # Break function
+    break if queue.empty?
+  end
+
+  # No solution
+  []
+end
+
+# -- Heuristics
+
+# Main method
+def heuristic(current, final, h = 'manhattan')
+  if h == 'manhattan'
+    manhattan_distance(current, final)
+  else
+    board_diff(current, final)
+  end
+end
+
+# Manhattan
+def manhattan_distance(current, final)
+  count = 0
+  (0..(current.length - 1)).each do |i|
+    (0..(current.length - 1)).each do |j|
+      count += ((current[i][j] / 3).to_i - (final[i][j] / 3).to_i).abs +
+               (current[i][j] % 3 - final[i][j] % 3).abs
+    end
+  end
+  count
+end
+
+# Board diffs
+def board_diff(current, final)
+  count = 0
+  (0..(current.length - 1)).each do |i|
+    (0..(current.length - 1)).each do |j|
+      count += 1 if current[i][j] != final[i][j]
+    end
+  end
+  count
 end
 
 # ------------ Methods for Movement Trace to Solution

@@ -4,7 +4,7 @@ require_relative 'node'
 class Board
   # -- Acessors
   attr_accessor :size
-  attr_reader :values
+  attr_reader :current_state
   attr_reader :root
   attr_reader :final_state
 
@@ -29,6 +29,15 @@ class Board
   # solution
   def solution?(state)
     state.current_state == final_state.current_state
+  end
+
+  # Given a board, check if it has a valid solution
+  def solvable(board)
+    # Gets parity and blank position
+    parity, blank = get_parity_and_blank(board.flatten)
+
+    # Checks based on parity and blank position if it is solvable
+    check_parity_and_blank(parity, blank)
   end
 
   private
@@ -85,14 +94,6 @@ class Board
     end
   end
 
-  # Given a board, check if it has a valid solution
-  def solvable(board)
-    # Gets parity and blank position
-    parity, blank = get_parity_and_blank(board.flatten)
-
-    # Checks based on parity and blank position if it is solvable
-    check_parity_and_blank(parity, blank)
-  end
   # ----------
 
   # Calculates parity and blank position for a flattened (1 dimension) board
@@ -138,14 +139,24 @@ class Board
   # Checks based on board size, parity and blank position
   # if the board is solvable
   def check_parity_and_blank(parity, blank)
-    if size.even?
-      if blank.even?
-        parity.even?
-      else
-        parity.odd?
-      end
-    else
+    # if size.even?
+    #   if blank.even?
+    #     parity.even?
+    #   else
+    #     parity.odd?
+    #   end
+    # else
+    #   parity.even?
+    # end
+
+    if size.odd?
       parity.even?
+    elsif parity.even? && blank.odd?
+      true
+    elsif parity.odd? && blank.even?
+      true
+    else
+      false
     end
   end
 
