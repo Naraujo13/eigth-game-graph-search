@@ -1,4 +1,4 @@
-require 'benchmark'
+require 'benchmark/memory'
 load 'search_methods.rb'
 
 def depth(board)
@@ -89,7 +89,7 @@ board6 = Board.new(
 
 # --- Benchmark with board 1
 puts 'Benchmark with Board 1:'
-Benchmark.bmbm(30) do |x|
+Benchmark.memory do |x|
   x.report('Depth Search:') { depth(board1) }
   x.report('Breadth Search:') { breadth(board1) }
   x.report('Iterative Breadth Search:') { iterative_breadth(board1) }
@@ -99,7 +99,7 @@ end
 
 # --- Benchmark with board 2
 puts 'Benchmark with Board 2:'
-Benchmark.bmbm(30) do |x|
+Benchmark.memory do |x|
   x.report('Depth Search:') { depth(board2) }
   x.report('Breadth Search:') { breadth(board2) }
   x.report('Iterative Breadth Search:') { iterative_breadth(board2) }
@@ -109,7 +109,7 @@ end
 
 # --- Benchmark with board 3
 puts 'Benchmark with Board 3:'
-Benchmark.bmbm(30) do |x|
+Benchmark.memory do |x|
   x.report('Depth Search:') { depth(board3) }
   x.report('Breadth Search:') { breadth(board3) }
   x.report('Iterative Breadth Search:') { iterative_breadth(board3) }
@@ -119,7 +119,7 @@ end
 
 # --- Benchmark with board 4
 puts 'Benchmark with Board 4:'
-Benchmark.bmbm(30) do |x|
+Benchmark.memory do |x|
   x.report('Depth Search:') { depth(board4) }
   x.report('Breadth Search:') { breadth(board4) }
   x.report('Iterative Breadth Search:') { iterative_breadth(board4) }
@@ -129,7 +129,7 @@ end
 
 # --- Benchmark with board 5
 puts 'Benchmark with Board 5:'
-Benchmark.bmbm(30) do |x|
+Benchmark.memory do |x|
   x.report('Depth Search:') { depth(board5) }
   x.report('Breadth Search:') { breadth(board5) }
   x.report('Iterative Breadth Search:') { iterative_breadth(board5) }
@@ -137,12 +137,12 @@ Benchmark.bmbm(30) do |x|
   x.report('Manhattan A*:') { manhattan(board5) }
 end
 
-# --- Benchmark with board 6
-puts 'Benchmark with Board 6:'
-Benchmark.bmbm(30) do |x|
-  x.report('Depth Search:') { depth(board6) }
-  x.report('Breadth Search:') { breadth(board6) }
-  x.report('Iterative Breadth Search:') { iterative_breadth(board6) }
-  x.report('Manhattan Board Diff:') { board_diff(board6) }
-  x.report('Manhattan A*:') { manhattan(board6) }
-end
+# # --- Benchmark with board 6
+# puts 'Benchmark with Board 6:'
+# Benchmark.memory do |x|
+#   x.report('Depth Search:') { depth(board6) }
+#   x.report('Breadth Search:') { breadth(board6) }
+#   x.report('Iterative Breadth Search:') { iterative_breadth(board6) }
+#   x.report('Manhattan Board Diff:') { board_diff(board6) }
+#   x.report('Manhattan A*:') { manhattan(board6) }
+# end
