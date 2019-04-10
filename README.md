@@ -287,7 +287,7 @@ Iterative Depth Search: | 10.437000 | 0.046000 | 10.483000 | 10.512768 |
 A* with Board Diff: | 0.109000 | 0.000000 | 0.109000 | 0.115455 |
 A* with Manhattan Distance: | 0.125000 | 0.000000 | 0.125000 | 0.113406 |
 
-# Memory
+## Memory
 
 For some not totally explained reason, the memory benchmarking gem wasn't able to run in this test case. Trying to run it caused the whole computer to freeze after a few seconds. Until the moment of writing of this report the reason was unknown (probably something related to this case demanding more memory than others, but why crash just when calling memory-benchmark is still unknown).
 
