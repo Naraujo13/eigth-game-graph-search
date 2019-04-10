@@ -5,7 +5,7 @@ Author: Nícolas Oreques de Araujo
 
 Date: 09/04/2019
 
-Available at: https://github.com/Naraujo13/eigth-game-graph-search
+Available at: https://github.com/Naraujo13/sliding-puzzle
 
 First Task from Artificial Intelligence (FIA) class at UFPel Masters Degree from 2019
 
